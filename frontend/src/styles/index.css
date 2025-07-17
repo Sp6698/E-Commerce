@@ -67,7 +67,8 @@ body {
 /* Profile Dropdown */
 .dropdown-menu {
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
+    margin-right: 10px;
 }
 
 .dropdown-item {
