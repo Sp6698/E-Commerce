@@ -1,50 +1,156 @@
-// src/components/ProductCard.js
+// src/pages/Home.js
 import React, { useState } from 'react';
-import { Card, Button, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
+import ProductCard from '../components/ProductCard';
 
-const ProductCard = ({ product }) => {
-    const [isHovered, setIsHovered] = useState(false);
+const Home = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const products = [
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Wireless Headphones",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        {
+            id: 1,
+            name: "Smart Phone",
+            price: 99.99,
+            discount: 20.00,
+            stock: 15,
+            image: "headphones.jpg" // Ensure this matches the actual filename
+        },
+        // Add other products similarly
+    ];
+
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
-        <Card
-            className={`shadow-sm ${isHovered ? 'product-card-hover' : ''}`}
-            style={{
-                width: '250px',
-                height: '400px',
-                transition: 'all 0.3s ease',
-                zIndex: isHovered ? 10 : 1
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className="ratio ratio-1x1 bg-light">
-                <Card.Img
-                    variant="top"
-                    src={`/images/products/electronics/${product.image}`} // Use dynamic image path
-                    alt={product.name}
-                    style={{
-                        objectFit: 'cover', // Maintain aspect ratio
-                        width: '100%', // Full width of the card
-                        height: '100%', // Full height of the card
-                    }}
-                />
+        <Container className="py-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                <h2 className="mb-3 mb-md-0">Our Products</h2>
+                <InputGroup style={{ width: '300px' }}>
+                    <Form.Control
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Button variant="primary">
+                        <i className="fas fa-search"
+                        ></i>
+                    </Button>
+                </InputGroup>
             </div>
-            <Card.Body className="d-flex flex-column">
-                <Card.Title className="fs-6 mb-1">{product.name}</Card.Title>
-                <Card.Text className="text-danger mb-1 fw-bold">${product.price.toFixed(2)}</Card.Text>
-                <Badge bg="success" className="mb-2">Save ${product.discount}</Badge>
-                <div className="small text-muted mb-2">
-                    <i className="fas fa-box-open me-1"></i> {product.stock} available
-                </div>
-                <Button
-                    variant={isHovered ? 'primary' : 'outline-primary'}
-                    className="mt-auto"
-                >
-                    <i className="fas fa-cart-plus me-1"></i> Add to Cart
-                </Button>
-            </Card.Body>
-        </Card>
+
+            <Row className="products-grid">
+                {filteredProducts.map(product => (
+                    <Col key={product.id} xs={12} sm={6} md={4} lg={3}>
+                        <ProductCard product={product} />
+                    </Col>
+                ))}
+            </Row>
+        </Container>
     );
 };
 
-export default ProductCard;
+export default Home;
