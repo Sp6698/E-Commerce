@@ -20,9 +20,11 @@ function App() {
       <div className="app-container d-flex flex-column vh-100">
         <Navbar toggleSidenav={toggleSidenav} sidenavOpen={sidenavOpen} />
         <div className="d-flex flex-grow-1 overflow-hidden">
-          <SideNav isOpen={sidenavOpen} />
+          {sidenavOpen && (
+            <SideNav isOpen={sidenavOpen} />
+          )}
           <main className={`content-area flex-grow-1 overflow-auto`}>
-            <div className="container-fluid p-3">
+            <div className="container-fluid ">
               <Routes>
                 <Route path="/" element={<Home />} />
               </Routes>

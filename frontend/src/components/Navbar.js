@@ -54,7 +54,7 @@ const Navbar = ({ toggleSidenav, sidenavOpen }) => {
 
                 <div className="d-flex align-items-center gap-3">
                     {/* Notification Dropdown */}
-                    <div ref={dropdownRefs.notifications}>
+                    <div ref={dropdownRefs.notifications} className='px-2'>
                         <button
                             className="btn btn-link text-white position-relative p-0"
                             onClick={() => toggleDropdown('notifications')}
@@ -68,7 +68,7 @@ const Navbar = ({ toggleSidenav, sidenavOpen }) => {
                     </div>
 
                     {/* Cart Dropdown */}
-                    <div ref={dropdownRefs.cart}>
+                    <div ref={dropdownRefs.cart} className='px-2'>
                         <button
                             className="btn btn-link text-white position-relative p-0"
                             onClick={() => toggleDropdown('cart')}
@@ -82,7 +82,7 @@ const Navbar = ({ toggleSidenav, sidenavOpen }) => {
                     </div>
 
                     {/* Profile Dropdown */}
-                    <div ref={dropdownRefs.profile}>
+                    <div ref={dropdownRefs.profile} className='px-2'>
                         <button
                             className="btn btn-link text-white p-0"
                             onClick={() => toggleDropdown('profile')}
