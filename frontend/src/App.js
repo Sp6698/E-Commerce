@@ -1,6 +1,6 @@
 // src/App.js
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Added missing imports
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import SideNav from './components/SideNav';
 import Home from './pages/Home';
@@ -17,15 +17,16 @@ function App() {
 
   return (
     <Router>
-      <div className="app-container d-flex flex-column">
+      <div className="app-container d-flex flex-column vh-100">
         <Navbar toggleSidenav={toggleSidenav} sidenavOpen={sidenavOpen} />
-        <div className="d-flex flex-grow-1">
+        <div className="d-flex flex-grow-1 overflow-hidden">
           <SideNav isOpen={sidenavOpen} />
-          <main className={`flex-grow-1 ${sidenavOpen ? 'ps-3' : ''}`}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              {/* We'll add other routes later */}
-            </Routes>
+          <main className={`content-area flex-grow-1 overflow-auto`}>
+            <div className="container-fluid p-3">
+              <Routes>
+                <Route path="/" element={<Home />} />
+              </Routes>
+            </div>
           </main>
         </div>
       </div>

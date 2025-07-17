@@ -1,98 +1,50 @@
-// src/pages/Home.js
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import ProductCard from '../components/ProductCard';
+// src/components/ProductCard.js
+import React, { useState } from 'react';
+import { Card, Button, Badge } from 'react-bootstrap';
 
-const Home = () => {
-    // Enhanced mock data
-    const products = [
-        {
-            id: 1,
-            name: "Premium Wireless Headphones",
-            price: 89.99,
-            originalPrice: 129.99,
-            offer: "30% OFF",
-            category: "Electronics",
-            stock: 15,
-            image: "https://placehold.co/600x600?text=Headphones"
-        },
-        {
-            id: 2,
-            name: "Sleek Smartphone Case",
-            price: 19.99,
-            category: "Accessories",
-            stock: 42,
-            image: "https://placehold.co/600x600?text=Phone+Case"
-        },
-        {
-            id: 3,
-            name: "Fast Wireless Charger",
-            price: 29.99,
-            offer: "Limited Deal",
-            category: "Electronics",
-            stock: 8,
-            image: "https://placehold.co/600x600?text=Charger"
-        },
-        {
-            id: 4,
-            name: "Portable Bluetooth Speaker",
-            price: 79.99,
-            category: "Electronics",
-            stock: 0,
-            image: "https://placehold.co/600x600?text=Speaker"
-        },
-        {
-            id: 5,
-            name: "Ergonomic Wireless Mouse",
-            price: 39.99,
-            originalPrice: 49.99,
-            offer: "20% OFF",
-            category: "Accessories",
-            stock: 22,
-            image: "https://placehold.co/600x600?text=Mouse"
-        },
-        {
-            id: 6,
-            name: "Mechanical Keyboard",
-            price: 89.99,
-            category: "Accessories",
-            stock: 14,
-            image: "https://placehold.co/600x600?text=Keyboard"
-        },
-        {
-            id: 7,
-            name: "HD Webcam",
-            price: 49.99,
-            offer: "New",
-            category: "Electronics",
-            stock: 7,
-            image: "https://placehold.co/600x600?text=Webcam"
-        },
-        {
-            id: 8,
-            name: "USB-C Hub",
-            price: 34.99,
-            category: "Accessories",
-            stock: 19,
-            image: "https://placehold.co/600x600?text=USB+Hub"
-        }
-    ];
+const ProductCard = ({ product }) => {
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
-        <Container className="py-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0">Featured Products</h2>
-                <button className="btn btn-outline-primary btn-sm">View All</button>
+        <Card
+            className={`shadow-sm ${isHovered ? 'product-card-hover' : ''}`}
+            style={{
+                width: '250px',
+                height: '400px',
+                transition: 'all 0.3s ease',
+                zIndex: isHovered ? 10 : 1
+            }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <div className="ratio ratio-1x1 bg-light">
+                <Card.Img
+                    variant="top"
+                    src={`/images/products/electronics/${product.image}`} // Use dynamic image path
+                    alt={product.name}
+                    style={{
+                        objectFit: 'cover', // Maintain aspect ratio
+                        width: '100%', // Full width of the card
+                        height: '100%', // Full height of the card
+                    }}
+                />
             </div>
-            <Row className="g-4">
-                {products.map(product => (
-                    <Col key={product.id} xs={12} sm={6} md={4} lg={3} className="d-flex">
-                        <ProductCard product={product} />
-                    </Col>
-                ))}
-            </Row>
-        </Container>
+            <Card.Body className="d-flex flex-column">
+                <Card.Title className="fs-6 mb-1">{product.name}</Card.Title>
+                <Card.Text className="text-danger mb-1 fw-bold">${product.price.toFixed(2)}</Card.Text>
+                <Badge bg="success" className="mb-2">Save ${product.discount}</Badge>
+                <div className="small text-muted mb-2">
+                    <i className="fas fa-box-open me-1"></i> {product.stock} available
+                </div>
+                <Button
+                    variant={isHovered ? 'primary' : 'outline-primary'}
+                    className="mt-auto"
+                >
+                    <i className="fas fa-cart-plus me-1"></i> Add to Cart
+                </Button>
+            </Card.Body>
+        </Card>
     );
 };
 
-export default Home;
+export default ProductCard;
