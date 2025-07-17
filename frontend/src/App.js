@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.js (Revert to previous working version)
 import React, { useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Navbar from './components/Navbar';
