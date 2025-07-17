@@ -1,0 +1,62 @@
+/* src/styles/index.css */
+body {
+  padding-top: 56px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.app-container {
+  min-height: 100vh;
+}
+
+/* Navbar styles */
+.navbar-brand h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* SideNav styles */
+.sidenav {
+  width: 250px;
+  height: calc(100vh - 56px);
+  position: fixed;
+  top: 56px;
+  left: -250px;
+  background: #343a40;
+  color: white;
+  transition: all 0.3s;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidenav.open {
+  left: 0;
+}
+
+.sidenav .nav-link {
+  color: rgba(255,255,255,0.75) !important;
+  padding: 10px 20px;
+}
+
+.sidenav .nav-link:hover {
+  color: white !important;
+  background: rgba(255,255,255,0.1);
+}
+
+/* Main Content styles */
+.main-content {
+  margin-left: 0;
+  transition: margin-left 0.3s;
+}
+
+.main-content.sidenav-open {
+  margin-left: 250px;
+}
+
+@media (max-width: 992px) {
+  .main-content.sidenav-open {
+    margin-left: 0;
+    position: relative;
+    z-index: 1;
+  }
+}
