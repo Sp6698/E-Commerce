@@ -173,8 +173,24 @@ const Signup = () => {
         }
 
         try {
-            const res = await axios.post('/api/signup', formData);
-            alert(res.data.message);
+            let data = {
+                userId: formData.userId,
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                mobileNo: formData.mobileNo,
+                address: formData.address,
+                gender: formData.gender,
+                role: 'customer',
+                email: formData.email,
+                password: formData.password
+            }
+            const saveRes = await fetchApis('/auth/signup', data, 'post');
+            console.log("saveRes", saveRes);
+            toast[saveRes.status](saveRes.message);
+            if (saveRes.hasError) {
+                return
+            }
+            handleClear();
         } catch (err) {
             alert(err.response?.data?.error || 'Signup failed');
         }
@@ -223,7 +239,18 @@ const Signup = () => {
             color: '#d32f2f', // Error color
         }
     };
-
+    const handleClear = () => {
+        setFormData({
+            firstName: '',
+            lastName: '',
+            userId: '',
+            password: '',
+            confirmPassword: '',
+            mobileNo: '',
+            email: '',
+            gender: ''
+        })
+    }
     return (
         <Container maxWidth="sm" className='my-5' sx={{ alignItems: 'center', justifyContent: 'center' }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: 3, width: '100%' }}>

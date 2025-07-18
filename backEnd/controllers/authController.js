@@ -31,10 +31,10 @@ const signup = async (req, res) => {
             email,
             password: hashedPassword
         });
-
-        res.status(201).json({ message: "User created successfully", user });
+        res.json({ data: user, hasError: false, message: "User created successfully" });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error(error)
+        res.json({ data: {}, hasError: true, message: error.message });
     }
 };
 
@@ -46,13 +46,14 @@ const login = async (req, res) => {
         const user = await User.findOne({ where: { userId } });
 
         if (user && await bcrypt.compare(password, user.password)) {
-            const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.json({ message: "Login successful", token });
+            let token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            res.json({ data: { user: user, token }, hasError: false, message: "Login successful", token });
         } else {
-            res.status(401).json({ message: "Invalid userId or password" });
+            res.json({ data: {}, hasError: true, message: "Invalid userId or password" });
         }
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error(error)
+        res.json({ data: {}, hasError: true, message: error.message });
     }
 };
 

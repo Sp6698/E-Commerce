@@ -1,4 +1,3 @@
-// backEnd/models/userModel.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/dbConfig');
 
@@ -40,6 +39,10 @@ const User = sequelize.define('User', {
         validate: {
             isEmail: true
         }
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 }, {
     timestamps: true,
