@@ -25,16 +25,11 @@ const ProductCard = ({ product }) => {
             <div className="ratio ratio-1x1 bg-light">
                 <Card.Img
                     variant="top"
-                    // src={`/images/products/electronics/${product.image}`} // Use dynamic image path
-                    src={`../images/products/electronics/headphones.jpg`} // Use dynamic image path
+                    src={require(`../images/products/electronics/${product.image}`)}
                     alt={product.name}
-                    style={{
-                        objectFit: 'cover', // Maintain aspect ratio
-                        width: '100%', // Full width of the card
-                        height: '100%', // Full height of the card
-                        padding: '10px'
-                    }}
+                    className="img-thumbnail"
                 />
+
             </div>
             <Card.Body className="d-flex flex-column">
                 <Card.Title className="fs-6 mb-1">{product.name}</Card.Title>
