@@ -12,6 +12,7 @@ import './styles/index.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AddProduct from './components/AddProduct';
+import OrderList from './components/OrderList';
 
 function App() {
   const [sidenavOpen, setSidenavOpen] = useState(true);
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/add-product" element={<AddProduct />} />
+                <Route path="/orders" element={<OrderList />} />
               </Routes>
             </div>
           </main>
