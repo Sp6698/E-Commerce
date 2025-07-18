@@ -1,115 +1,75 @@
-
+// src/components/Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-    Box,
-    Button,
-    TextField,
-    Typography,
-    Link,
-    Paper,
-    Grid
+    TextField, Button, Typography, Container, Paper, InputAdornment
 } from '@mui/material';
+import { Email, Lock } from '@mui/icons-material';
 import axios from 'axios';
-import { useAuth } from '../controllers/AuthContext';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const { login } = useAuth();
+    const [form, setForm] = useState({ userId: '', password: '' });
+
+    const handleChange = (e) => {
+        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', {
-                email,
-                password
-            });
-            const { token, user } = response.data;
-            login(token, user);
-            navigate('/dashboard');
+            const res = await axios.post('/api/login', form);
+            alert(res.data.message);
+            localStorage.setItem('token', res.data.token);
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            alert(err.response?.data?.message || 'Login failed');
         }
     };
 
     return (
-        <Grid container component="main" sx={{ height: '100vh' }}>
-            <Grid item xs={false} sm={4} md={7}
-                sx={{
-                    backgroundImage: 'url(https://placehold.co/1200x800?text=Login+Background)',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundColor: (t) => t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <Box
-                    sx={{
-                        my: 8,
-                        mx: 4,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-                        Sign in
-                    </Typography>
-                    {error && (
-                        <Typography color="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ width: '100%', mt: 1 }}>
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            autoComplete="email"
-                            autoFocus
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Sign In
-                        </Button>
-                        <Grid container justifyContent="flex-end">
-                            <Grid item>
-                                <Link href="/signup" variant="body2">
-                                    Don't have an account? Sign Up
-                                </Link>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Box>
-            </Grid>
-        </Grid>
+        <Container maxWidth="sm">
+            <Paper elevation={4} sx={{ p: 4, mt: 8, borderRadius: 3, boxShadow: '0 0 12px #00e5ff' }}>
+                <Typography variant="h5" align="center" sx={{ mb: 3, color: '#00bfa5' }}>
+                    We are launching soon!!! Stay tuned for updates.
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        fullWidth
+                        label="Email/User name"
+                        name="userId"
+                        required
+                        type="text"
+                        margin="normal"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start"><Email /></InputAdornment>
+                            )
+                        }}
+                    />
+                    <TextField
+                        fullWidth
+                        label="Password"
+                        name="password"
+                        required
+                        type="password"
+                        margin="normal"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start"><Lock /></InputAdornment>
+                            )
+                        }}
+                    />
+                    <Button variant="contained" fullWidth type="submit" sx={{ mt: 2, bgcolor: '#006d8f' }}>
+                        Login
+                    </Button>
+                </form>
+                <Typography align="center" sx={{ mt: 2 }}>
+                    Don’t have an account yet? <a href="/signup">Sign Up</a>
+                </Typography>
+                <Typography align="center" sx={{ mt: 1 }}>
+                    <a href="/forgot-password" style={{ color: 'blue' }}>Forgot Password?</a>
+                </Typography>
+            </Paper>
+        </Container>
     );
 };
 
 export default Login;
-
