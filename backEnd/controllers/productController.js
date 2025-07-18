@@ -19,7 +19,7 @@ const addProduct = async (req, res) => {
         res.json({ hasError: false, message: 'Product added successfully', data: newProduct });
     } catch (error) {
         console.error('Error adding product:', error);
-        res.json({ hasError: true, message: 'Server error' });
+        res.json({ hasError: true, message: error.message, data: null });
     }
 };
 
