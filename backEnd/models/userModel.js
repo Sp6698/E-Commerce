@@ -3,6 +3,12 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/dbConfig');
 
 const User = sequelize.define('User', {
+    userId: {
+        type: DataTypes.STRING, // or UUID, based on your design
+        allowNull: false,
+        unique: true,
+        primaryKey: true // marks this as the main identifier
+    },
     firstName: {
         type: DataTypes.STRING(50),
         allowNull: false
@@ -38,8 +44,8 @@ const User = sequelize.define('User', {
         }
     }
 }, {
-    timestamps: true, // Adds createdAt and updatedAt fields
-    paranoid: true // Adds deletedAt for soft deletion
+    timestamps: true,
+    paranoid: true
 });
 
 module.exports = User;

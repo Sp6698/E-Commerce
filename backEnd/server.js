@@ -3,6 +3,7 @@ const express = require('express');
 const { sequelize, testConnection } = require('./config/dbConfig');
 const User = require('./models/userModel');
 require('dotenv').config();
+const authRouter = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,8 @@ const initializeDB = async () => {
 app.get('/', (req, res) => {
     res.send('E-Commerce Backend API');
 });
+
+app.use('/auth', authRouter);
 
 // Start Server
 app.listen(PORT, async () => {
