@@ -18,7 +18,6 @@ const signup = async (req, res) => {
     } = req.body;
 
     try {
-
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
             userId,
@@ -41,13 +40,17 @@ const signup = async (req, res) => {
 // Login API
 const login = async (req, res) => {
     const { userId, password } = req.body;
-
     try {
         const user = await User.findOne({ where: { userId } });
 
         if (user && await bcrypt.compare(password, user.password)) {
-            let token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            res.json({ data: { user: user, token }, hasError: false, message: "Login successful", token });
+            const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            // Remove password from user object before sending response
+            const userWithoutPassword = { ...user.dataValues };
+            delete userWithoutPassword.password;
+
+            res.json({ data: { user: userWithoutPassword, token: token }, hasError: false, message: "Login successful" });
         } else {
             res.json({ data: {}, hasError: true, message: "Invalid userId or password" });
         }
