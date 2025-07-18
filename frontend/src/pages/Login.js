@@ -44,11 +44,14 @@ const Login = () => {
 
                 localStorage.setItem('token', loginRes.data.token);
                 localStorage.setItem('userId', loginRes.data.user.userId);
+                localStorage.setItem('role', loginRes.data.user.role);
                 localStorage.setItem('userNm', loginRes.data.user.firstName + ' ' + loginRes.data.user.lastName);
 
                 setTimeout(() => {
                     localStorage.removeItem("token");
-                    localStorage.removeItem("userInfo");
+                    localStorage.removeItem("userId");
+                    localStorage.removeItem("role");
+                    localStorage.removeItem("userNm");
                 }, expiresIn);
                 navigate('/');
             }
