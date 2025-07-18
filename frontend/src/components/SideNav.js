@@ -1,14 +1,10 @@
-import React, { use, useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 const SideNav = ({ isOpen }) => {
-  const roleStore = localStorage.getItem('role');
-  const [role, setRole] = useState(roleStore);
+  const { role } = useAuthStore();
   const categories = ['Electronics', 'Clothing', 'Books'];
-  useEffect(() => {
-    console.log(roleStore);
-    setRole(roleStore);
-  }, [roleStore])
 
   return (
     <div className={`sidenav ${isOpen ? 'open' : ''}`}>
@@ -19,6 +15,7 @@ const SideNav = ({ isOpen }) => {
           <li className="nav-item">
             <Link className="nav-link" to="/">Home</Link>
           </li>
+
           {role === 'admin' ? (
             <>
               <li className="nav-item"><Link className="nav-link" to="/add-product">Add New Item</Link></li>

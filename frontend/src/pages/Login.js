@@ -14,13 +14,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { fetchApis } from '../util/commonAPI';
 import { jwtDecode } from "jwt-decode";
-
+import { setAuth } from '../store/authStore'; // ✅ added line
 
 const Login = () => {
     const [form, setForm] = useState({ userId: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+
     const handleChange = (e) => {
         setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
@@ -35,24 +36,34 @@ const Login = () => {
             console.log("loginRes", loginRes);
             toast[loginRes.status](loginRes.message);
             if (loginRes.hasError) {
-                return
+                return;
             }
+
             if (loginRes.data?.token) {
-                let expiresTime = jwtDecode(loginRes.data.token).exp * 1000;
+                const { token } = loginRes.data;
+                const { userId, role, firstName, lastName } = loginRes.data.user;
+
+                let expiresTime = jwtDecode(token).exp * 1000;
                 let currwenTime = new Date().getTime();
                 let expiresIn = expiresTime - currwenTime - 15 * 60 * 1000;
 
-                localStorage.setItem('token', loginRes.data.token);
-                localStorage.setItem('userId', loginRes.data.user.userId);
-                localStorage.setItem('role', loginRes.data.user.role);
-                localStorage.setItem('userNm', loginRes.data.user.firstName + ' ' + loginRes.data.user.lastName);
+                // Save to localStorage
+                localStorage.setItem('token', token);
+                localStorage.setItem('userId', userId);
+                localStorage.setItem('role', role);
+                localStorage.setItem('userNm', `${firstName} ${lastName}`);
 
+                // ✅ update the global store (reactive)
+                setAuth(role, token);
+
+                // Auto-remove token before expiry
                 setTimeout(() => {
                     localStorage.removeItem("token");
                     localStorage.removeItem("userId");
                     localStorage.removeItem("role");
                     localStorage.removeItem("userNm");
                 }, expiresIn);
+
                 navigate('/');
             }
         } catch (err) {
