@@ -209,8 +209,8 @@ const Signup = () => {
     // Styles for reduced input height
     const inputStyles = {
         '& .MuiInputBase-root': {
-            height: '28px', // Reduced from default ~56px to 28px (50% reduction)
-            fontSize: '14px',
+            height: '30px', // Reduced from default ~56px to 28px (50% reduction)
+            fontSize: '16px',
         },
         '& .MuiInputLabel-root': {
             fontSize: '14px',
@@ -263,13 +263,13 @@ const Signup = () => {
     }
     return (
         <Container maxWidth="sm" className='my-5' sx={{ alignItems: 'center', justifyContent: 'center' }}>
-            <Paper elevation={3} sx={{ p: 4, borderRadius: 3, width: '100%' }}>
+            <Paper elevation={3} sx={{ p: 2, borderRadius: 3, width: '100%' }}>
                 <form onSubmit={handleSubmit}>
                     <Typography variant="subtitle1" sx={{ mb: 1, textAlign: 'center' }}>
                         <strong>User Information</strong>
                     </Typography>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                         <TextField
                             label="User ID"
                             name="userId"
