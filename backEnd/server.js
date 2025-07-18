@@ -4,6 +4,8 @@ const { sequelize, testConnection } = require('./config/dbConfig');
 const User = require('./models/userModel');
 require('dotenv').config();
 const authRouter = require('./routes/authRoutes');
+const productRouter = require('./routes/productRoutes'); 
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 // ✅ Enable CORS for frontend on port 3000
 app.use(cors({
     origin: 'http://localhost:3000',
-    credentials: true, // Optional: use if you're sending cookies or auth headers
+    credentials: true, 
 }));
 
 // Middleware
@@ -34,6 +36,8 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/product', productRouter); 
+
 
 // Start Server
 app.listen(PORT, async () => {
