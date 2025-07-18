@@ -1,3 +1,4 @@
+const Product = require('../models/productModel');
 const Cart = require('../models/cartModel');
 
 // Add to Cart
@@ -37,7 +38,43 @@ const removeFromCart = async (req, res) => {
     }
 };
 
+
+// Get all cart items for a user
+const getUserCart = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        const cartItems = await Cart.findAll({
+            where: { userId },
+            include: [{
+                model: Product,
+                attributes: ['name', 'image', 'rate']
+            }]
+        });
+
+        const formattedCart = cartItems.map(item => {
+            const product = item.Product;
+            const totalRate = product.rate * item.quantity;
+
+            return {
+                productId: item.productId,
+                productName: product.name,
+                image: product.image,
+                rate: product.rate,
+                quantity: item.quantity,
+                totalRate
+            };
+        });
+
+        res.json({ hasError: false, message: 'Cart items fetched', data: formattedCart });
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        res.json({ hasError: true, message: error.message, data: null });
+    }
+};
+
 module.exports = {
     addToCart,
-    removeFromCart
+    removeFromCart,
+    getUserCart
 };

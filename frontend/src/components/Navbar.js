@@ -74,9 +74,6 @@ const Navbar = ({ toggleSidenav, sidenavOpen }) => {
                             onClick={() => toggleDropdown('cart')}
                         >
                             <i className="fas fa-shopping-cart fs-5"></i>
-                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                2
-                            </span>
                         </button>
                         {showDropdown.cart && <CartDropdown />}
                     </div>
