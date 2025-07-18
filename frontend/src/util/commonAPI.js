@@ -1,13 +1,12 @@
 import apiClient from "./api-client";
 import Swal from "sweetalert2";
 
+
 export async function fetchApis(url, data, type, authReq = false) {
   if (!localStorage.getItem("token") && authReq) {
-    console.log("token not found", router);
     await new Promise(function (resolve, reject) {
       setTimeout(resolve, 3000);
     });
-    router.push("/");
     return { hasError: true, status: "warning", message: "Session expired. Please login to continue", data: null };
   }
   if (authReq) {
