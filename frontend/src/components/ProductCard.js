@@ -25,7 +25,7 @@ const ProductCard = ({ product }) => {
             <div className="ratio ratio-1x1 bg-light">
                 <Card.Img
                     variant="top"
-                    src={require(`../images/products/electronics/${product.image}`)}
+                    src={require(`../images/${product.image}`)}
                     alt={product.name}
                     className="img-thumbnail"
                 />
