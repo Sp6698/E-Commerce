@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import {
-    TextField, Button, Container, Paper, Typography, InputAdornment, IconButton, MenuItem
-} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import axios from 'axios';
-import { fetchApis } from '../util/commonAPI';
+import {
+    Button, Container,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Paper,
+    TextField,
+    Typography
+} from '@mui/material';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { fetchApis } from '../util/commonAPI';
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -34,6 +40,9 @@ const Signup = () => {
         email: '',
         gender: ''
     });
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -191,6 +200,7 @@ const Signup = () => {
                 return
             }
             handleClear();
+            navigate('/login');
         } catch (err) {
             alert(err.response?.data?.error || 'Signup failed');
         }
