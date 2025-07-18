@@ -30,8 +30,8 @@ const Product = sequelize.define('Product', {
         type: DataTypes.STRING(100),
         allowNull: false
     },
-    imageFileName: {
-        type: DataTypes.STRING,
+    image: { // changed from imageFileName to image for clarity
+        type: DataTypes.BLOB('long'), // store large binary data
         allowNull: true
     }
 }, {

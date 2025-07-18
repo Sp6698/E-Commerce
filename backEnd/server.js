@@ -5,6 +5,7 @@ const User = require('./models/userModel');
 require('dotenv').config();
 const authRouter = require('./routes/authRoutes');
 const productRouter = require('./routes/productRoutes'); 
+const Product = require('./models/productModel');
 
 
 const app = express();
@@ -25,6 +26,7 @@ const initializeDB = async () => {
 
     try {
         await User.sync({ force: false });
+        await Product.sync({ force: false });
     } catch (error) {
         console.error('Error synchronizing models:', error);
     }

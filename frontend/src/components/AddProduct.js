@@ -4,12 +4,14 @@ import {
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { fetchApis } from '../util/commonAPI';
 
 const AddProduct = () => {
     const [product, setProduct] = useState({
         name: '', qty: '', description: '', rate: '', rating: 0, company: ''
     });
     const [image, setImage] = useState(null);
+    const [base64Image, setBase64Image] = useState('');
     const [preview, setPreview] = useState('');
 
     const handleChange = (e) => {
@@ -25,7 +27,14 @@ const AddProduct = () => {
         if (file) {
             setImage(file);
             const reader = new FileReader();
-            reader.onloadend = () => setPreview(reader.result);
+
+            // Preview
+            reader.onloadend = () => {
+                setPreview(reader.result);
+                const base64 = reader.result.split(',')[1]; // remove data:image/... prefix
+                setBase64Image(base64);
+            };
+
             reader.readAsDataURL(file);
         }
     };
@@ -39,27 +48,33 @@ const AddProduct = () => {
         return true;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
 
-        const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
-        const fileName = image
-            ? `${product.name}_${timestamp}.${image.name.split('.').pop()}`
-            : '';
-
         const newProduct = {
             ...product,
-            imageFileName: fileName
+            base64Image: base64Image || null
         };
 
-        console.log("Saving Product:", newProduct);
-        toast.success("Product saved (mock)");
+        try {
+            const productRes = await fetchApis('/product/add', newProduct, 'post', true);
+            console.log("productRes", productRes);
+            if (productRes.hasError) {
+                toast[productRes.status](productRes.message);
+                return
+            }
+            handleClear();
+        } catch (error) {
+            toast.error("Server error: " + error.message);
+        }
+    };
+    const handleClear = () => {
         setProduct({ name: '', qty: '', description: '', rate: '', rating: 0, company: '' });
         setImage(null);
         setPreview('');
-    };
-
+        setBase64Image('');
+    }
     return (
         <div className="container my-5">
             <Paper elevation={3} className="p-4">
