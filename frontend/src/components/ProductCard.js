@@ -1,6 +1,7 @@
-import React from 'react';
-import { Card, Button } from 'react-bootstrap';
 import StarIcon from '@mui/icons-material/Star';
+import { Button, Card } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { fetchApis } from '../util/commonAPI';
 
 const ProductCard = ({ product }) => {
     if (!product) return null;
@@ -13,14 +14,32 @@ const ProductCard = ({ product }) => {
         rating,
         base64Image
     } = product;
+
     const handleAddToCart = async (product) => {
-        console.log('Added to cart:', product);
-        // You can also push to cart array or call context/store method
+        try {
+            if (!localStorage.getItem('token')) {
+                toast.warn('Please login to add to cart.');
+                return
+            }
+            const response = await fetchApis('/cart/addToCart', {
+                userId: localStorage.getItem('userId'),
+                productId: product.id,
+                quantity: 1
+            }, 'post', true);
+            console.log('Add to Cart Success:', response);
+            toast[response.status](response.message);
+            if (response.hasError) {
+                return
+            }
+        } catch (error) {
+            console.error('Add to Cart Error:', error);
+            toast.error(error.message);
+        }
     };
 
     const handleBuyNow = async (product) => {
         console.log('Buying now:', product);
-        // You might redirect to payment page or order confirmation
+        // You might redirect to payment or checkout here
     };
 
     return (
@@ -38,9 +57,7 @@ const ProductCard = ({ product }) => {
                 <div style={{ marginBottom: '4px' }}><strong>Rate:</strong> ₹{rate?.toFixed(2)}</div>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
                     <StarIcon sx={{ color: '#fbc02d', fontSize: '16px' }} />
-                    <span style={{ fontSize: '13px', marginLeft: '4px' }}>
-                        {rating}
-                    </span>
+                    <span style={{ fontSize: '13px', marginLeft: '4px' }}>{rating}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                     <Button
@@ -60,7 +77,6 @@ const ProductCard = ({ product }) => {
                         Buy
                     </Button>
                 </div>
-
             </Card.Body>
         </Card>
     );

@@ -19,8 +19,8 @@ const Home = () => {
     const fetchProducts = async () => {
         try {
             const res = await fetchApis('/product/all', {}, 'get');
-            console.log("getAllProducts", res);
             if (res.hasError) {
+                console.log("getAllProducts", res);
                 toast[res.status](res.message);
                 return
             }
