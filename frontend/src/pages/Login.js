@@ -27,13 +27,11 @@ const Login = () => {
     return (
         <Container maxWidth="sm">
             <Paper elevation={4} sx={{ p: 4, mt: 8, borderRadius: 3, boxShadow: '0 0 12px #00e5ff' }}>
-                <Typography variant="h5" align="center" sx={{ mb: 3, color: '#00bfa5' }}>
-                    We are launching soon!!! Stay tuned for updates.
-                </Typography>
+
                 <form onSubmit={handleSubmit}>
                     <TextField
                         fullWidth
-                        label="Email/User name"
+                        label="User Id"
                         name="userId"
                         required
                         type="text"
@@ -57,9 +55,11 @@ const Login = () => {
                             )
                         }}
                     />
-                    <Button variant="contained" fullWidth type="submit" sx={{ mt: 2, bgcolor: '#006d8f' }}>
-                        Login
-                    </Button>
+                    <div className="d-flex justify-content-center">
+                        <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+                            Login
+                        </Button>
+                    </div>
                 </form>
                 <Typography align="center" sx={{ mt: 2 }}>
                     Don’t have an account yet? <a href="/signup">Sign Up</a>

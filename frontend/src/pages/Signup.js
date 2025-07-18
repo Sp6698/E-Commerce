@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    TextField, Button, Container, Paper, Typography, Grid, InputAdornment, IconButton, MenuItem
+    TextField, Button, Container, Paper, Typography, InputAdornment, IconButton, MenuItem
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
@@ -20,14 +20,90 @@ const Signup = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [userIdAvailable, setUserIdAvailable] = useState(true);
+    const [errors, setErrors] = useState({
+        firstName: '',
+        lastName: '',
+        userId: '',
+        password: '',
+        confirmPassword: '',
+        mobileNo: '',
+        email: '',
+        gender: ''
+    });
 
     const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Clear error when user starts typing
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [name]: ''
+        }));
     };
 
     const handleTogglePassword = () => {
         setShowPassword(prev => !prev);
+    };
+
+    const handleToggleConfirmPassword = () => {
+        setShowConfirmPassword(prev => !prev);
+    };
+
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        const newErrors = { ...errors };
+
+        switch (name) {
+            case 'firstName':
+                if (!formData.firstName) {
+                    newErrors.firstName = 'First Name is required';
+                }
+                break;
+            case 'lastName':
+                if (!formData.lastName) {
+                    newErrors.lastName = 'Last Name is required';
+                }
+                break;
+            case 'userId':
+                if (!formData.userId) {
+                    newErrors.userId = 'User ID is required';
+                }
+                break;
+            case 'password':
+                if (!formData.password) {
+                    newErrors.password = 'Password is required';
+                } else if (formData.password.length < 6) {
+                    newErrors.password = 'Password must be at least 6 characters long';
+                }
+                break;
+            case 'confirmPassword':
+                if (formData.password !== formData.confirmPassword) {
+                    newErrors.confirmPassword = 'Password and Confirm Password must match';
+                }
+                break;
+            case 'mobileNo':
+                if (!formData.mobileNo || !/^\d{10}$/.test(formData.mobileNo)) {
+                    newErrors.mobileNo = 'Please enter a valid 10-digit mobile number';
+                }
+                break;
+            case 'email':
+                if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+                    newErrors.email = 'Please enter a valid email address';
+                }
+                break;
+            case 'gender':
+                if (!formData.gender) {
+                    newErrors.gender = 'Please select a Gender';
+                }
+                break;
+            default:
+                break;
+        }
+
+        setErrors(newErrors);
     };
 
     const handleUserIdBlur = async () => {
@@ -43,19 +119,50 @@ const Signup = () => {
     };
 
     const validate = () => {
-        const { userId, email, password, confirmPassword, mobileNo, gender, firstName, lastName } = formData;
-        if (!userId || !email || !password || !confirmPassword || !mobileNo || !gender || !firstName || !lastName) return false;
-        if (!/^\S+@\S+\.\S+$/.test(email)) return false;
-        if (!/^\d{10}$/.test(mobileNo)) return false;
-        if (password !== confirmPassword) return false;
-        if (!userIdAvailable) return false;
-        return true;
+        let isValid = true;
+        const newErrors = {};
+
+        if (!formData.firstName) {
+            newErrors.firstName = 'First Name is required';
+            isValid = false;
+        } else if (!formData.lastName) {
+            newErrors.lastName = 'Last Name is required';
+            isValid = false;
+        } else if (!formData.userId) {
+            newErrors.userId = 'User ID is required';
+            isValid = false;
+        } else if (!formData.password) {
+            newErrors.password = 'Password is required';
+            isValid = false;
+        } else if (formData.password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters long';
+            isValid = false;
+        } else if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = 'Password and Confirm Password must match';
+            isValid = false;
+        } else if (!formData.mobileNo || !/^\d{10}$/.test(formData.mobileNo)) {
+            newErrors.mobileNo = 'Please enter a valid 10-digit mobile number';
+            isValid = false;
+        } else if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Please enter a valid email address';
+            isValid = false;
+        } else if (!formData.gender) {
+            newErrors.gender = 'Please select a Gender';
+            isValid = false;
+        }
+
+        if (!userIdAvailable) {
+            newErrors.userId = 'User ID already exists';
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validate()) {
-            alert("Please enter valid details.");
             return;
         }
 
@@ -67,147 +174,196 @@ const Signup = () => {
         }
     };
 
+    // Styles for reduced input height
+    const inputStyles = {
+        '& .MuiInputBase-root': {
+            height: '28px', // Reduced from default ~56px to 28px (50% reduction)
+            fontSize: '14px',
+        },
+        '& .MuiInputLabel-root': {
+            fontSize: '14px',
+            transform: 'translate(14px, 6px) scale(1)', // Adjusted label position
+        },
+        '& .MuiInputLabel-shrink': {
+            transform: 'translate(14px, -9px) scale(0.75)', // Adjusted shrunk label position
+        },
+        '& .MuiOutlinedInput-input': {
+            padding: '4px 14px', // Reduced padding
+        },
+        '& .MuiFormHelperText-root': {
+            fontSize: '11px',
+            marginTop: '1px',
+            marginLeft: '0px',
+            color: '#d32f2f', // Error color
+        }
+    };
+
+    // Special styles for multiline address field
+    const addressStyles = {
+        '& .MuiInputBase-root': {
+            minHeight: '56px', // Keep original height for multiline
+            fontSize: '14px',
+        },
+        '& .MuiInputLabel-root': {
+            fontSize: '14px',
+        },
+        '& .MuiOutlinedInput-input': {
+            padding: '8px 14px',
+        },
+        '& .MuiFormHelperText-root': {
+            fontSize: '11px',
+            marginTop: '1px',
+            marginLeft: '0px',
+            color: '#d32f2f', // Error color
+        }
+    };
+
     return (
-        <Container maxWidth="md">
-            <Typography variant="h5" align="center" sx={{ my: 3 }}>
-                Welcome to <strong>Rojnishi</strong>!
-            </Typography>
-            <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Container maxWidth="sm" className='my-5' sx={{ alignItems: 'center', justifyContent: 'center' }}>
+            <Paper elevation={3} sx={{ p: 4, borderRadius: 3, width: '100%' }}>
                 <form onSubmit={handleSubmit}>
-                    <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                    <Typography variant="subtitle1" sx={{ mb: 1, textAlign: 'center' }}>
                         <strong>User Information</strong>
                     </Typography>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="User ID"
-                                name="userId"
-                                fullWidth
-                                required
-                                value={formData.userId}
-                                onChange={handleChange}
-                                onBlur={handleUserIdBlur}
-                                error={!userIdAvailable}
-                                helperText={!userIdAvailable ? 'User ID already exists' : ''}
-                            />
-                        </Grid>
 
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Email"
-                                name="email"
-                                type="email"
-                                fullWidth
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                        <TextField
+                            label="User ID"
+                            name="userId"
+                            fullWidth
+                            required
+                            value={formData.userId}
+                            onChange={handleChange}
+                            onBlur={handleUserIdBlur}
+                            error={!userIdAvailable}
+                            helperText={!userIdAvailable ? 'User ID already exists' : ''}
+                            sx={inputStyles}
+                        />
 
-                        <Grid item xs={6}>
-                            <TextField
-                                label="First Name"
-                                name="firstName"
-                                fullWidth
-                                required
-                                value={formData.firstName}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+                        <TextField
+                            label="First Name"
+                            name="firstName"
+                            fullWidth
+                            required
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            sx={inputStyles}
+                        />
 
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Last Name"
-                                name="lastName"
-                                fullWidth
-                                required
-                                value={formData.lastName}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+                        <TextField
+                            label="Last Name"
+                            name="lastName"
+                            fullWidth
+                            required
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            sx={inputStyles}
+                        />
 
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Mobile No"
-                                name="mobileNo"
-                                type="tel"
-                                fullWidth
-                                required
-                                inputProps={{ maxLength: 10 }}
-                                value={formData.mobileNo}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+                        <TextField
+                            label="Email"
+                            name="email"
+                            type="email"
+                            fullWidth
+                            required
+                            value={formData.email}
+                            onChange={handleChange}
+                            sx={inputStyles}
+                        />
 
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Gender"
-                                name="gender"
-                                select
-                                fullWidth
-                                required
-                                value={formData.gender}
-                                onChange={handleChange}
-                            >
-                                <MenuItem value="Male">Male</MenuItem>
-                                <MenuItem value="Female">Female</MenuItem>
-                                <MenuItem value="Other">Other</MenuItem>
-                            </TextField>
-                        </Grid>
+                        <TextField
+                            label="Mobile No"
+                            name="mobileNo"
+                            type="tel"
+                            fullWidth
+                            required
+                            inputProps={{ maxLength: 10 }}
+                            value={formData.mobileNo}
+                            onChange={handleChange}
+                            sx={inputStyles}
+                        />
 
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Address"
-                                name="address"
-                                multiline
-                                rows={2}
-                                fullWidth
-                                value={formData.address}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+                        <TextField
+                            label="Gender"
+                            name="gender"
+                            select
+                            fullWidth
+                            required
+                            value={formData.gender}
+                            onChange={handleChange}
+                            sx={inputStyles}
+                        >
+                            <MenuItem value="Male">Male</MenuItem>
+                            <MenuItem value="Female">Female</MenuItem>
+                            <MenuItem value="Other">Other</MenuItem>
+                        </TextField>
 
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Password"
-                                name="password"
-                                type={showPassword ? "text" : "password"}
-                                fullWidth
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={handleTogglePassword}>
-                                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    )
-                                }}
-                            />
-                        </Grid>
+                        <TextField
+                            label="Address"
+                            name="address"
+                            multiline
+                            rows={2}
+                            fullWidth
+                            value={formData.address}
+                            onChange={handleChange}
+                            sx={addressStyles}
+                        />
 
-                        <Grid item xs={6}>
-                            <TextField
-                                label="Confirm Password"
-                                name="confirmPassword"
-                                type={showPassword ? "text" : "password"}
-                                fullWidth
-                                required
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-                    </Grid>
+                        <TextField
+                            label="Password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            fullWidth
+                            required
+                            value={formData.password}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={!!errors.password}
+                            helperText={errors.password}
+                            sx={inputStyles}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={handleTogglePassword} size="small">
+                                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
 
-                    <Button type="submit" variant="contained" sx={{ mt: 3 }} fullWidth>
-                        Register
-                    </Button>
+                        <TextField
+                            label="Confirm Password"
+                            name="confirmPassword"
+                            type={showConfirmPassword ? "text" : "password"}
+                            fullWidth
+                            required
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={!!errors.confirmPassword}
+                            helperText={errors.confirmPassword}
+                            sx={inputStyles}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={handleToggleConfirmPassword} size="small">
+                                            {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', marginTop: '16px' }}>
+                        <Button type="submit" variant="contained" sx={{ flex: 1 }}>
+                            Register
+                        </Button>
 
-                    <Button href="/login" variant="outlined" sx={{ mt: 2 }} fullWidth>
-                        Back to Login
-                    </Button>
+                        <Button href="/login" variant="outlined" sx={{ flex: 1 }}>
+                            Back to Login
+                        </Button>
+                    </div>
                 </form>
             </Paper>
         </Container>
