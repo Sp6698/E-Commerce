@@ -18,11 +18,6 @@ const signup = async (req, res) => {
     } = req.body;
 
     try {
-        // Check if userId already exists
-        const existingUser = await User.findOne({ where: { userId } });
-        if (existingUser) {
-            return res.status(409).json({ message: "User ID already exists" });
-        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
@@ -63,17 +58,17 @@ const login = async (req, res) => {
 
 // Check if userId exists
 const checkUserId = async (req, res) => {
-    const { userId } = req.params;
-
+    const { userId } = req.body;
     try {
         const user = await User.findOne({ where: { userId } });
         if (user) {
-            res.json({ exists: true });
+            res.json({ data: { exists: true }, hasError: false, message: "User ID already exist please Use different ID" });
         } else {
-            res.json({ exists: false });
+            res.json({ data: { exists: false }, hasError: false, message: "User ID does not exist" });
         }
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error(error)
+        res.json({ data: {}, hasError: true, message: error.message });
     }
 };
 

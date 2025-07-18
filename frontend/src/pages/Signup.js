@@ -4,6 +4,8 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
+import { fetchApis } from '../util/commonAPI';
+import { toast } from 'react-toastify';
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -108,10 +110,14 @@ const Signup = () => {
 
     const handleUserIdBlur = async () => {
         try {
-            // You can add your API call here to check if userId is taken
-            // Example endpoint: `/api/check-userid/${formData.userId}`
-            const res = await axios.get(`/api/check-userid/${formData.userId}`);
-            setUserIdAvailable(!res.data.exists);
+
+            const checkUserIdRes = await fetchApis('/auth/checkUserId', { userId: formData.userId }, 'post');
+            if (checkUserIdRes.hasError) {
+                console.log("checkUserIdRes", checkUserIdRes);
+                toast[checkUserIdRes.status](checkUserIdRes.message);
+                return
+            }
+            setUserIdAvailable(!checkUserIdRes.data.exists);
         } catch (err) {
             console.error("Error checking userId", err);
             setUserIdAvailable(true);

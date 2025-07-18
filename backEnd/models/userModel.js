@@ -4,10 +4,8 @@ const { sequelize } = require('../config/dbConfig');
 
 const User = sequelize.define('User', {
     userId: {
-        type: DataTypes.STRING, // or UUID, based on your design
+        type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        primaryKey: true // marks this as the main identifier
     },
     firstName: {
         type: DataTypes.STRING(50),

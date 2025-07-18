@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './styles/index.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [sidenavOpen, setSidenavOpen] = useState(true);
@@ -26,7 +28,7 @@ function App() {
             <SideNav isOpen={sidenavOpen} />
           )}
           <main className={`content-area flex-grow-1 overflow-auto`}>
-            <div className="container-fluid ">
+            <div className="container-fluid">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/signup" element={<Signup />} />
@@ -36,6 +38,17 @@ function App() {
           </main>
         </div>
       </div>
+
+      {/* ToastContainer added here */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover />
     </Router>
   );
 }

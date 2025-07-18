@@ -1,5 +1,5 @@
-// backEnd/server.js
 const express = require('express');
+const cors = require('cors'); // ✅ Add this
 const { sequelize, testConnection } = require('./config/dbConfig');
 const User = require('./models/userModel');
 require('dotenv').config();
@@ -7,6 +7,12 @@ const authRouter = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ✅ Enable CORS for frontend on port 3000
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true, // Optional: use if you're sending cookies or auth headers
+}));
 
 // Middleware
 app.use(express.json());
@@ -16,8 +22,7 @@ const initializeDB = async () => {
     await testConnection();
 
     try {
-        await User.sync({ force: false }); // Set force: true only in development to drop and recreate tables
-        console.log('User table synchronized');
+        await User.sync({ force: false });
     } catch (error) {
         console.error('Error synchronizing models:', error);
     }
