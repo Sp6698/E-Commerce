@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
 import AdminOrders from '../components/AdminOrders';
 import { useAuthStore } from '../store/authStore';
+import axios from 'axios';
+import { fetchApis } from '../util/commonAPI';
+import { toast } from 'react-toastify';
 
 const Home = () => {
     const { role } = useAuthStore(); // ✅ Reactive role from store
     const [searchTerm, setSearchTerm] = useState('');
+    const [products, setProducts] = useState([]);
 
-    const products = [
-        { id: 1, name: "Wireless Headphones", price: 99.99, discount: 20, stock: 15, image: "headphones.jpg" }
-    ];
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        try {
+            const res = await fetchApis('/product/all', {}, 'get');
+            console.log("getAllProducts", res);
+            if (res.hasError) {
+                toast[res.status](res.message);
+                return
+            }
+            setProducts(res.data);
+        } catch (error) {
+            console.error('Error fetching products:', error.message);
+        }
+    };
 
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())

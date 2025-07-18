@@ -1,49 +1,66 @@
-// src/components/ProductCard.js
-import React, { useState } from 'react';
-import { Card, Button, Badge } from 'react-bootstrap';
+import React from 'react';
+import { Card, Button } from 'react-bootstrap';
+import StarIcon from '@mui/icons-material/Star';
 
 const ProductCard = ({ product }) => {
-    const [isHovered, setIsHovered] = useState(false);
+    if (!product) return null;
 
-    // Check if product is defined
-    if (!product) {
-        return null; // or return a placeholder component
-    }
+    const {
+        name,
+        company,
+        qty,
+        rate,
+        rating,
+        base64Image
+    } = product;
+    const handleAddToCart = async (product) => {
+        console.log('Added to cart:', product);
+        // You can also push to cart array or call context/store method
+    };
+
+    const handleBuyNow = async (product) => {
+        console.log('Buying now:', product);
+        // You might redirect to payment page or order confirmation
+    };
 
     return (
-        <Card
-            className={`shadow-sm ${isHovered ? 'product-card-hover' : ''}`}
-            style={{
-                width: '15vw',
-                height: '62vh',
-                transition: 'all 0.3s ease',
-                zIndex: isHovered ? 10 : 1
-            }}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <div className="ratio ratio-1x1 bg-light">
-                <Card.Img
-                    variant="top"
-                    src={require(`../images/${product.image}`)}
-                    alt={product.name}
-                    className="img-thumbnail"
-                />
-
-            </div>
-            <Card.Body className="d-flex flex-column">
-                <Card.Title className="fs-6 mb-1">{product.name}</Card.Title>
-                <Card.Text className="text-danger mb-1 fw-bold">${product.price.toFixed(2)}</Card.Text>
-                <Badge bg="success" className="mb-2">Save ${product.discount}</Badge>
-                <div className="small text-muted mb-2">
-                    <i className="fas fa-box-open me-1"></i> {product.stock} available
+        <Card className="p-2" style={{ width: '250px', fontSize: '15px' }}>
+            <Card.Img
+                variant="top"
+                src={`data:image/jpeg;base64,${base64Image}`}
+                alt={name}
+                style={{ height: '150px', objectFit: 'contain', borderRadius: '5px' }}
+            />
+            <Card.Body className="p-2">
+                <Card.Title style={{ fontSize: '16px', marginBottom: '4px' }}>{name}</Card.Title>
+                <div style={{ marginBottom: '4px' }}><strong>Company:</strong> {company}</div>
+                <div style={{ marginBottom: '4px' }}><strong>Qty:</strong> {qty}</div>
+                <div style={{ marginBottom: '4px' }}><strong>Rate:</strong> ₹{rate?.toFixed(2)}</div>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                    <StarIcon sx={{ color: '#fbc02d', fontSize: '16px' }} />
+                    <span style={{ fontSize: '13px', marginLeft: '4px' }}>
+                        {rating}
+                    </span>
                 </div>
-                <Button
-                    variant={isHovered ? 'primary' : 'outline-primary'}
-                    className="mt-auto"
-                >
-                    <i className="fas fa-cart-plus me-1"></i> Add to Cart
-                </Button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="w-50"
+                        onClick={() => handleAddToCart(product)}
+                    >
+                        Add to Cart
+                    </Button>
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        className="w-50"
+                        onClick={() => handleBuyNow(product)}
+                    >
+                        Buy
+                    </Button>
+                </div>
+
             </Card.Body>
         </Card>
     );
