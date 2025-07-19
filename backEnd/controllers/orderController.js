@@ -6,6 +6,50 @@ const Cart = require('../models/cartModel');
 const { Op, Sequelize } = require('sequelize');
 
 // Get all orders with user and product details
+// const getAllOrders = async (req, res) => {
+//     try {
+//         const orders = await sequelize.transaction(async (t) => {
+//             const result = await Order.findAll({
+//                 include: [
+//                     {
+//                         model: User,
+//                         attributes: [
+//                             [Sequelize.fn('CONCAT', Sequelize.col('firstName'), ' ', Sequelize.col('lastName')), 'userName'],
+//                             'mobileNo'
+//                         ]
+//                     },
+//                     {
+//                         model: Product,
+//                         attributes: ['name', 'rate']
+//                     }
+//                 ],
+//                 attributes: ['address', 'orderDate', 'qty', 'paymentMode'],
+//                 transaction: t
+//             });
+
+
+//             // Format the result to a clean response
+//             const formattedOrders = result.map(order => ({
+//                 userName: order.User?.dataValues?.userName || 'Unknown User',
+//                 mobile: order.User?.mobileNo || 'N/A',
+//                 productName: order.Product?.name || 'Unknown Product',
+//                 address: order.address,
+//                 orderDate: order.orderDate,
+//                 qty: order.qty,
+//                 rate: order.Product?.rate || 0,
+//                 paymentMode: order.paymentMode
+//             }));
+
+
+//             return formattedOrders;
+//         });
+
+//         res.json({ hasError: false, data: orders, message: 'Orders fetched successfully' });
+//     } catch (error) {
+//         console.error('Error fetching orders:', error);
+//         res.json({ hasError: true, message: error.message, data: null });
+//     }
+// };
 const getAllOrders = async (req, res) => {
     try {
         const orders = await sequelize.transaction(async (t) => {
@@ -14,21 +58,27 @@ const getAllOrders = async (req, res) => {
                     {
                         model: User,
                         attributes: [
-                            [Sequelize.fn('CONCAT', Sequelize.col('firstName'), ' ', Sequelize.col('lastName')), 'userName'],
+                            [Sequelize.fn('CONCAT', Sequelize.col('User.firstName'), ' ', Sequelize.col('User.lastName')), 'userName'],
                             'mobileNo'
-                        ]
+                        ],
+                        required: true,
+                        on: {
+                            '$Order.userId$': { [Sequelize.Op.col]: 'User.userId' }
+                        }
                     },
                     {
                         model: Product,
-                        attributes: ['name', 'rate']
+                        attributes: ['name', 'rate'],
+                        required: true,
+                        on: {
+                            '$Order.productId$': { [Sequelize.Op.col]: 'Product.id' }
+                        }
                     }
                 ],
                 attributes: ['address', 'orderDate', 'qty', 'paymentMode'],
                 transaction: t
             });
 
-
-            // Format the result to a clean response
             const formattedOrders = result.map(order => ({
                 userName: order.User?.dataValues?.userName || 'Unknown User',
                 mobile: order.User?.mobileNo || 'N/A',
@@ -39,7 +89,6 @@ const getAllOrders = async (req, res) => {
                 rate: order.Product?.rate || 0,
                 paymentMode: order.paymentMode
             }));
-
 
             return formattedOrders;
         });
