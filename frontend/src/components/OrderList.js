@@ -1,33 +1,34 @@
 // src/components/OrderList.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-const mockOrders = [
-    {
-        id: 1,
-        product: "Wireless Mouse",
-        customer: "John Doe",
-        address: "123 Main St, Mumbai",
-        price: 499,
-        status: "Pending",
-        mobile: "9876543210"
-    },
-    {
-        id: 2,
-        product: "Bluetooth Speaker",
-        customer: "Jane Smith",
-        address: "456 Hill Rd, Pune",
-        price: 1599,
-        status: "Pending",
-        mobile: "8765432109"
-    }
-];
+import { fetchApis } from '../util/commonAPI'; // adjust path if needed
 
 const OrderList = () => {
+    const [orders, setOrders] = useState([]);
+
+    const getOrders = async () => {
+        try {
+            const response = await fetchApis('/order/getOrderList', {}, 'get', true); // your backend endpoint
+            if (response.hasError) {
+                toast[response.status](response.message);
+                return;
+            }
+            setOrders(response.data);
+        } catch (error) {
+            console.error(error);
+            toast.error("Something went wrong while fetching orders");
+        }
+    };
+
+    useEffect(() => {
+        getOrders();
+    }, []);
+
     const handleAction = (type, id) => {
         toast.info(`${type} action in progress for order ${id}`);
+        // implement actual logic here if needed
     };
 
     return (
@@ -39,46 +40,56 @@ const OrderList = () => {
                         <table className="table table-bordered table-hover align-middle text-center">
                             <thead className="table-light">
                                 <tr>
-                                    <th>Product</th>
                                     <th>Customer</th>
-                                    <th>Address</th>
-                                    <th>Price</th>
-                                    <th>Status</th>
                                     <th>Mobile No</th>
+                                    <th>Product</th>
+                                    <th>Qty</th>
+                                    <th>Rate</th>
+                                    <th>Payment Mode</th>
+                                    <th>Address</th>
+                                    <th>Order Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {mockOrders.map(order => (
-                                    <tr key={order.id}>
-                                        <td>{order.product}</td>
-                                        <td>{order.customer}</td>
-                                        <td>{order.address}</td>
-                                        <td>₹{order.price}</td>
-                                        <td>{order.status}</td>
-                                        <td>{order.mobile}</td>
-                                        <td>
-                                            <div className="d-flex justify-content-center gap-2">
-                                                <Button
-                                                    variant="contained"
-                                                    color="success"
-                                                    size="small"
-                                                    onClick={() => handleAction("Accept", order.id)}
-                                                >
-                                                    Accept
-                                                </Button>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="error"
-                                                    size="small"
-                                                    onClick={() => handleAction("Reject", order.id)}
-                                                >
-                                                    Reject
-                                                </Button>
-                                            </div>
-                                        </td>
+                                {orders.length > 0 ? (
+                                    orders.map((order, index) => (
+                                        <tr key={index}>
+                                            <td>{order.userName}</td>
+                                            <td>{order.mobile}</td>
+                                            <td>{order.productName}</td>
+                                            <td>{order.qty}</td>
+                                            <td>₹{order.rate}</td>
+                                            <td>{order.paymentMode}</td>
+                                            <td>{order.address}</td>
+                                            <td>{new Date(order.orderDate).toLocaleDateString()}</td>
+                                            <td>
+                                                <div className="d-flex justify-content-center gap-2">
+                                                    <Button
+                                                        variant="contained"
+                                                        color="success"
+                                                        size="small"
+                                                        onClick={() => handleAction("Accept", index)}
+                                                    >
+                                                        Accept
+                                                    </Button>
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="error"
+                                                        size="small"
+                                                        onClick={() => handleAction("Reject", index)}
+                                                    >
+                                                        Reject
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="9">No orders found</td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>

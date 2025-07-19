@@ -2,7 +2,7 @@ const { sequelize } = require('../config/dbConfig');
 const Order = require('../models/orderModel');
 const User = require('../models/userModel');
 const Product = require('../models/productModel');
-const Cart = require('../models/cartModel'); // Assuming you have a Cart model
+const Cart = require('../models/cartModel');
 const { Op, Sequelize } = require('sequelize');
 
 // Get all orders with user and product details
@@ -15,7 +15,7 @@ const getAllOrders = async (req, res) => {
                         model: User,
                         attributes: [
                             [Sequelize.fn('CONCAT', Sequelize.col('firstName'), ' ', Sequelize.col('lastName')), 'userName'],
-                            'mobile'
+                            'mobileNo'
                         ]
                     },
                     {
@@ -27,17 +27,19 @@ const getAllOrders = async (req, res) => {
                 transaction: t
             });
 
+
             // Format the result to a clean response
             const formattedOrders = result.map(order => ({
-                userName: order.User.dataValues.userName,
-                mobile: order.User.mobile,
-                productName: order.Product.name,
+                userName: order.User?.dataValues?.userName || 'Unknown User',
+                mobile: order.User?.mobileNo || 'N/A',
+                productName: order.Product?.name || 'Unknown Product',
                 address: order.address,
                 orderDate: order.orderDate,
                 qty: order.qty,
-                rate: order.Product.rate,
+                rate: order.Product?.rate || 0,
                 paymentMode: order.paymentMode
             }));
+
 
             return formattedOrders;
         });
@@ -57,6 +59,7 @@ const placeOrder = async (req, res) => {
 
         // 1. Fetch product
         const product = await Product.findByPk(productId, { transaction: t });
+        console.log('Fetched Product:', product?.toJSON());
 
         if (!product || product.qty < qty) {
             throw new Error('Product not available or insufficient stock');
@@ -72,15 +75,21 @@ const placeOrder = async (req, res) => {
             orderDate: new Date()
         }, { transaction: t });
 
+        console.log('New Order Created:', newOrder.toJSON());
+
         // 3. Update product stock
         product.qty -= qty;
         await product.save({ transaction: t });
 
+        console.log('Updated Product Stock:', product.qty);
+
         // 4. Remove from cart if exists
-        await Cart.destroy({
+        const cartDeleteCount = await Cart.destroy({
             where: { userId, productId },
             transaction: t
         });
+
+        console.log(`Cart items removed: ${cartDeleteCount}`);
 
         // Commit transaction
         await t.commit();
