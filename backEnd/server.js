@@ -8,6 +8,9 @@ const productRouter = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const Product = require('./models/productModel');
 const Cart = require('./models/cartModel');
+const Order = require('./models/orderModel');
+const orderRouter = require('./routes/orderRoutes');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +32,8 @@ const initializeDB = async () => {
         await User.sync({ force: false });
         await Product.sync({ force: false });
         await Cart.sync({ force: false });
+        await Order.sync({ force: false });
+
     } catch (error) {
         console.error('Error synchronizing models:', error);
     }
@@ -42,6 +47,7 @@ app.get('/', (req, res) => {
 app.use('/auth', authRouter);
 app.use('/product', productRouter);
 app.use('/cart', cartRoutes);
+app.use('/order', orderRouter);
 
 
 // Start Server
