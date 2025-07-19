@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuthStore } from '../store/authStore';
 import { fetchApis } from '../util/commonAPI';
+import { FaTrash } from 'react-icons/fa'; // ✅ Import icon
 
 const CartDropdown = () => {
     const { role } = useAuthStore();
@@ -16,7 +17,7 @@ const CartDropdown = () => {
     const checkCartStatus = async () => {
         setLoading(true);
         const userId = localStorage.getItem('userId');
-        const token = localStorage.getItem('token');
+
         if (!userId || role !== 'customer') {
             setCartItems([]);
             setMessage('Please log in to check cart');
@@ -42,6 +43,21 @@ const CartDropdown = () => {
             toast.error("Failed to fetch cart.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleRemove = async (productId) => {
+        const userId = localStorage.getItem('userId');
+        try {
+            const res = await fetchApis('/cart/removeFromCart', { userId, productId }, 'post', true);
+            console.log("remove from cart", res);
+            if (res.hasError) {
+                toast[res.status](res.message);
+                return;
+            }
+            await checkCartStatus();
+        } catch (err) {
+            toast.error('Error removing item');
         }
     };
 
@@ -83,9 +99,37 @@ const CartDropdown = () => {
                                         </div>
                                         <div className="d-flex justify-content-between align-items-center">
                                             <small className="text-muted">Qty: {item.quantity}</small>
+                                            <button
+                                                title="Remove from cart"
+                                                onClick={() => handleRemove(item.productId)}
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    color: 'white',
+                                                    backgroundColor: 'red',
+                                                    border: 'none',
+                                                    borderRadius: '5px',
+                                                    // padding: '5px 10px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '5px',
+                                                    fontSize: '10px',
+                                                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                                                }}
+                                            >
+                                                <FaTrash style={{ fontSize: '10px' }} />
+                                                Remove
+                                            </button>
+
                                             <small className="text-primary">₹{item.totalRate.toFixed(2)}</small>
                                         </div>
                                     </div>
+                                </div>
+                                <div style={{
+                                    bottom: '0px',
+                                    right: '0px',
+                                    zIndex: 10,
+                                    padding: '5px'
+                                }}>
                                 </div>
                             </div>
                         ))}
