@@ -2,6 +2,7 @@ const { sequelize } = require('../config/dbConfig');
 const Order = require('../models/orderModel');
 const User = require('../models/userModel');
 const Product = require('../models/productModel');
+const Cart = require('../models/cartModel'); // Assuming you have a Cart model
 const { Op, Sequelize } = require('sequelize');
 
 // Get all orders with user and product details
@@ -41,18 +42,27 @@ const getAllOrders = async (req, res) => {
             return formattedOrders;
         });
 
-        res.json({ hasError: false, data: orders });
+        res.json({ hasError: false, data: orders, message: 'Orders fetched successfully' });
     } catch (error) {
         console.error('Error fetching orders:', error);
-        res.status(500).json({ hasError: true, message: error.message });
+        res.json({ hasError: true, message: error.message, data: null });
     }
 };
 
 // Create a new order
-const createOrder = async (req, res) => {
+const placeOrder = async (req, res) => {
+    const t = await sequelize.transaction();
     try {
         const { userId, productId, qty, address, paymentMode } = req.body;
 
+        // 1. Fetch product
+        const product = await Product.findByPk(productId, { transaction: t });
+
+        if (!product || product.qty < qty) {
+            throw new Error('Product not available or insufficient stock');
+        }
+
+        // 2. Create order
         const newOrder = await Order.create({
             userId,
             productId,
@@ -60,17 +70,31 @@ const createOrder = async (req, res) => {
             address,
             paymentMode,
             orderDate: new Date()
+        }, { transaction: t });
+
+        // 3. Update product stock
+        product.qty -= qty;
+        await product.save({ transaction: t });
+
+        // 4. Remove from cart if exists
+        await Cart.destroy({
+            where: { userId, productId },
+            transaction: t
         });
 
-        res.status(201).json({ hasError: false, data: newOrder });
+        // Commit transaction
+        await t.commit();
+        res.json({ hasError: false, data: newOrder, message: 'Product Ordered successfully' });
+
     } catch (error) {
+        await t.rollback();
         console.error('Error creating order:', error);
-        res.status(500).json({ hasError: true, message: error.message });
+        res.status(500).json({ hasError: true, message: error.message, data: null });
     }
 };
 
 // Export all at end
 module.exports = {
     getAllOrders,
-    createOrder
+    placeOrder
 };

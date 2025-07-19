@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import StarIcon from '@mui/icons-material/Star';
 import { Button, Card, Modal, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { fetchApis } from '../util/commonAPI';
+import { commonAlertForSave, fetchApis } from '../util/commonAPI';
 
 const ProductCard = ({ product }) => {
     const [showDialog, setShowDialog] = useState(false);
     const [formData, setFormData] = useState({
         address: '',
-        quantity: 1,
-        paymentMode: 'Online',
+        quantity: '',
+        paymentMode: 'COD',
     });
     const [errors, setErrors] = useState({
         address: '',
@@ -69,34 +69,49 @@ const ProductCard = ({ product }) => {
 
     const handleOrder = async () => {
         if (!validateForm()) return;
+        let swalRes = await commonAlertForSave('Buy');
+        if (!swalRes) {
+            return;
+        }
 
         try {
-            const data = new FormData();
-            data.append('userId', localStorage.getItem('userId'));
-            data.append('productId', id);
-            data.append('quantity', formData.quantity);
-            data.append('paymentMode', formData.paymentMode);
-            data.append('address', formData.address);
-
+            const data = {
+                userId: localStorage.getItem('userId'),
+                productId: id,
+                qty: formData.quantity,
+                paymentMode: formData.paymentMode,
+                address: formData.address
+            }
             const response = await fetchApis('/order/placeOrder', data, 'post', true);
             toast[response.status](response.message);
 
-            if (!response.hasError) {
-                setShowDialog(false);
-                setFormData({ address: '', quantity: 1, paymentMode: 'Online' });
-                setErrors({ address: '', quantity: '' });
+            if (response.hasError) {
+                return
             }
+            handleClear();
+            window.location.reload();
         } catch (error) {
             toast.error("Order failed.");
         }
     };
 
     const handleCancel = () => {
-        setFormData({ address: '', quantity: 1, paymentMode: 'Online' });
+        setFormData({ address: '', quantity: '', paymentMode: 'COD' });
         setErrors({ address: '', quantity: '' });
         setShowDialog(false);
     };
-
+    const handleBuy = () => {
+        if (!localStorage.getItem('token')) {
+            toast.warn('Please login first to Buy.');
+            return;
+        }
+        setShowDialog(true);
+    };
+    const handleClear = () => {
+        setShowDialog(false);
+        setFormData({ address: '', quantity: '', paymentMode: 'COD' });
+        setErrors({ address: '', quantity: '' });
+    };
     return (
         <>
             <Card className="p-2" style={{ width: '250px', fontSize: '15px' }}>
@@ -128,7 +143,7 @@ const ProductCard = ({ product }) => {
                             variant="primary"
                             size="sm"
                             className="w-50"
-                            onClick={() => setShowDialog(true)}
+                            onClick={handleBuy}
                         >
                             Buy
                         </Button>
@@ -207,4 +222,3 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
-    
