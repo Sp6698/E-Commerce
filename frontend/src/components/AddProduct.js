@@ -24,20 +24,40 @@ const AddProduct = () => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setImage(file);
-            const reader = new FileReader();
+        if (!file) return;
 
-            // Preview
-            reader.onloadend = () => {
-                setPreview(reader.result);
-                const base64 = reader.result.split(',')[1]; // remove data:image/... prefix
-                setBase64Image(base64);
-            };
+        const MAX_SIZE = 40 * 1024 * 1024; // 40MB
 
-            reader.readAsDataURL(file);
+        // Validate type
+        if (!file.type.startsWith('image/')) {
+            toast.warn("Only image files are allowed.");
+            setImage(null);
+            setPreview('');
+            setBase64Image('');
+            return;
         }
+
+        // Validate size
+        if (file.size > MAX_SIZE) {
+            toast.warn("Image size must be less than 40MB.");
+            setImage(null);
+            setPreview('');
+            setBase64Image('');
+            return;
+        }
+
+        setImage(file);
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setPreview(reader.result);
+            const base64 = reader.result.split(',')[1];
+            setBase64Image(base64);
+        };
+
+        reader.readAsDataURL(file);
     };
+
 
     const validateForm = () => {
         const { name, qty, description, rate, rating, company } = product;

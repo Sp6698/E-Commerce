@@ -114,23 +114,32 @@ const ProductCard = ({ product }) => {
     };
     return (
         <>
-            <Card className="p-2" style={{ width: '250px', fontSize: '15px' }}>
+            <Card className="p-2 d-flex flex-column justify-content-between" style={{ width: '250px', minHeight: '420px', fontSize: '15px' }}>
                 <Card.Img
                     variant="top"
                     src={`data:image/jpeg;base64,${base64Image}`}
                     alt={name}
-                    style={{ height: '150px', objectFit: 'contain', borderRadius: '5px' }}
+                    className="img-thumbnail mx-auto"
+                    style={{
+                        height: '150px',
+                        width: '100%',
+                        objectFit: 'contain',
+                        borderRadius: '5px'
+                    }}
                 />
-                <Card.Body className="p-2">
-                    <Card.Title style={{ fontSize: '16px', marginBottom: '4px' }}>{name}</Card.Title>
-                    <div><strong>Company:</strong> {company}</div>
-                    <div><strong>Qty:</strong> {qty}</div>
-                    <div><strong>Rate:</strong> ₹{rate?.toFixed(2)}</div>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <StarIcon sx={{ color: '#fbc02d', fontSize: '16px' }} />
-                        <span style={{ fontSize: '13px', marginLeft: '4px' }}>{rating}</span>
+                <Card.Body className="p-2 d-flex flex-column justify-content-between flex-grow-1">
+                    <div className="text-start">
+                        <Card.Title style={{ fontSize: '16px', marginBottom: '4px' }}>{name}</Card.Title>
+                        <div><strong>Company:</strong> {company}</div>
+                        <div><strong>Qty:</strong> {qty}</div>
+                        <div><strong>Rate:</strong> ₹{rate?.toFixed(2)}</div>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <StarIcon sx={{ color: '#fbc02d', fontSize: '16px' }} />
+                            <span style={{ fontSize: '13px', marginLeft: '4px' }}>{rating}</span>
+                        </div>
                     </div>
-                    <div className="mt-2 d-flex gap-2">
+
+                    <div className="mt-auto d-flex gap-2 pt-3">
                         <Button
                             variant="outline-primary"
                             size="sm"
@@ -150,6 +159,7 @@ const ProductCard = ({ product }) => {
                     </div>
                 </Card.Body>
             </Card>
+
 
             {/* Order Dialog */}
             <Modal centered show={showDialog} onHide={handleCancel}>

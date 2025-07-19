@@ -3,15 +3,17 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
+    process.env.DB_NAME,        // 'railway'
+    process.env.DB_USER,        // 'root'
+    process.env.DB_PASSWORD,    // your password
     {
-        host: process.env.DB_HOST,
+        host: process.env.DB_HOST,     // 'yamabiko.proxy.rlwy.net'
+        port: process.env.DB_PORT,     // '17948'
         dialect: 'mysql',
-        logging: false // Disables SQL query logging in console
+        logging: false
     }
 );
+
 
 // Test the connection
 const testConnection = async () => {
