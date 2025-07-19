@@ -6,11 +6,13 @@ import { useAuthStore } from '../store/authStore';
 import axios from 'axios';
 import { fetchApis } from '../util/commonAPI';
 import { toast } from 'react-toastify';
+import ShoppingLoader from '../components/ShoppingLoader';
 
 const Home = () => {
     const { role } = useAuthStore(); // ✅ Reactive role from store
     const [searchTerm, setSearchTerm] = useState('');
     const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchProducts();
@@ -18,13 +20,16 @@ const Home = () => {
 
     const fetchProducts = async () => {
         try {
+            setLoading(true);
             const res = await fetchApis('/product/all', {}, 'get');
             if (res.hasError) {
                 console.log("getAllProducts", res);
+                setLoading(false);
                 toast[res.status](res.message);
                 return
             }
             setProducts(res.data);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching products:', error.message);
         }
@@ -38,6 +43,7 @@ const Home = () => {
 
     return (
         <Container className="py-4">
+            {loading && (<ShoppingLoader />)}
             <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h2 className="mb-3 mb-md-0">Our Products</h2>
                 <InputGroup style={{ width: '300px' }}>

@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { fetchApis } from '../util/commonAPI';
 import { useLocation, useNavigate } from "react-router-dom";
+import ShoppingLoader from '../components/ShoppingLoader';
 
 const Signup = () => {
     const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ const Signup = () => {
         password: '',
         confirmPassword: ''
     });
-
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [userIdAvailable, setUserIdAvailable] = useState(true);
@@ -219,13 +220,16 @@ const Signup = () => {
 
     const handleUserIdBlur = async () => {
         try {
+            setLoading(true);
             const checkUserIdRes = await fetchApis('/auth/checkUserId', { userId: formData.userId }, 'post');
             if (checkUserIdRes.hasError) {
                 console.log("checkUserIdRes", checkUserIdRes);
+                setLoading(false);
                 toast[checkUserIdRes.status](checkUserIdRes.message);
                 return
             }
             setUserIdAvailable(!checkUserIdRes.data.exists);
+            setLoading(false);
         } catch (err) {
             console.error("Error checking userId", err);
             setUserIdAvailable(true);
@@ -331,6 +335,7 @@ const Signup = () => {
         }
 
         try {
+            setLoading(true);
             let data = {
                 userId: formData.userId,
                 firstName: formData.firstName,
@@ -346,9 +351,11 @@ const Signup = () => {
             console.log("saveRes", saveRes);
             toast[saveRes.status](saveRes.message);
             if (saveRes.hasError) {
+                setLoading(false);
                 return
             }
             handleClear();
+            setLoading(false);
             navigate('/login');
         } catch (err) {
             alert(err.response?.data?.error || 'Signup failed');
@@ -495,6 +502,7 @@ const Signup = () => {
                 py: { xs: 2, sm: 4 }
             }}
         >
+            {loading && (<ShoppingLoader />)}
             <Paper
                 elevation={6}
                 sx={{

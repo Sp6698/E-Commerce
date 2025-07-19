@@ -3,6 +3,7 @@ import StarIcon from '@mui/icons-material/Star';
 import { Button, Card, Modal, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { commonAlertForSave, fetchApis } from '../util/commonAPI';
+import ShoppingLoader from './ShoppingLoader';
 
 const ProductCard = ({ product }) => {
     const [showDialog, setShowDialog] = useState(false);
@@ -15,7 +16,7 @@ const ProductCard = ({ product }) => {
         address: '',
         quantity: '',
     });
-
+    const [loading, setLoading] = useState(false);
     if (!product) return null;
 
     const {
@@ -34,12 +35,14 @@ const ProductCard = ({ product }) => {
                 toast.warn('Please login to add to cart.');
                 return;
             }
+            setLoading(true);
             const response = await fetchApis('/cart/addToCart', {
                 userId: localStorage.getItem('userId'),
                 productId: product.id,
                 quantity: 1
             }, 'post', true);
             toast[response.status](response.message);
+            setLoading(false);
         } catch (error) {
             toast.error(error.message);
         }
@@ -75,6 +78,7 @@ const ProductCard = ({ product }) => {
         }
 
         try {
+            setLoading(true);
             const data = {
                 userId: localStorage.getItem('userId'),
                 productId: id,
@@ -86,9 +90,11 @@ const ProductCard = ({ product }) => {
             toast[response.status](response.message);
 
             if (response.hasError) {
+                setLoading(false);
                 return
             }
             handleClear();
+            setLoading(false);
             window.location.reload();
         } catch (error) {
             toast.error("Order failed.");
@@ -114,6 +120,7 @@ const ProductCard = ({ product }) => {
     };
     return (
         <>
+            {loading && (<ShoppingLoader />)}
             <Card className="p-2 d-flex flex-column justify-content-between" style={{ width: '250px', minHeight: '420px', fontSize: '15px' }}>
                 <Card.Img
                     variant="top"

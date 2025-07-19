@@ -4,18 +4,23 @@ import { Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { fetchApis } from '../util/commonAPI'; // adjust path if needed
+import ShoppingLoader from './ShoppingLoader';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const getOrders = async () => {
         try {
+            setLoading(true);
             const response = await fetchApis('/order/getOrderList', {}, 'get', true); // your backend endpoint
             if (response.hasError) {
+                setLoading(false);
                 toast[response.status](response.message);
                 return;
             }
             setOrders(response.data);
+            setLoading(false);
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong while fetching orders");
@@ -33,6 +38,7 @@ const AdminOrders = () => {
 
     return (
         <div className="container my-5">
+            {loading && (<ShoppingLoader />)}
             <div className="card shadow">
                 <div className="card-body">
                     <h4 className="mb-4">Order List</h4>

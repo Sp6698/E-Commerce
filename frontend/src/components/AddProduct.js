@@ -5,6 +5,7 @@ import {
 import { toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { fetchApis } from '../util/commonAPI';
+import ShoppingLoader from './ShoppingLoader';
 
 const AddProduct = () => {
     const [product, setProduct] = useState({
@@ -13,6 +14,7 @@ const AddProduct = () => {
     const [image, setImage] = useState(null);
     const [base64Image, setBase64Image] = useState('');
     const [preview, setPreview] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
@@ -78,13 +80,16 @@ const AddProduct = () => {
         };
 
         try {
+            setLoading(true);
             const productRes = await fetchApis('/product/add', newProduct, 'post', true);
             console.log("productRes", productRes);
             if (productRes.hasError) {
+                setLoading(false);
                 toast[productRes.status](productRes.message);
                 return
             }
             handleClear();
+            setLoading(false);
         } catch (error) {
             toast.error("Server error: " + error.message);
         }
@@ -97,6 +102,7 @@ const AddProduct = () => {
     }
     return (
         <div className="container my-5">
+            {loading && (<ShoppingLoader />)}
             <Paper elevation={3} className="p-4">
                 <Typography variant="h5" className="mb-4">Add New Product</Typography>
                 <form onSubmit={handleSubmit}>

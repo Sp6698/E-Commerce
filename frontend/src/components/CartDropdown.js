@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import { useAuthStore } from '../store/authStore';
 import { fetchApis } from '../util/commonAPI';
 import { FaTrash } from 'react-icons/fa'; // ✅ Import icon
+import ShoppingLoader from './ShoppingLoader';
 
 const CartDropdown = () => {
     const { role } = useAuthStore();
@@ -49,9 +50,11 @@ const CartDropdown = () => {
     const handleRemove = async (productId) => {
         const userId = localStorage.getItem('userId');
         try {
+            setLoading(true);
             const res = await fetchApis('/cart/removeFromCart', { userId, productId }, 'post', true);
             console.log("remove from cart", res);
             if (res.hasError) {
+                setLoading(false);
                 toast[res.status](res.message);
                 return;
             }
@@ -74,7 +77,7 @@ const CartDropdown = () => {
             </div>
 
             {loading ? (
-                <div className="p-3 text-center">Loading...</div>
+                <ShoppingLoader />
             ) : message ? (
                 <div className="p-3 text-center">{message}</div>
             ) : (
