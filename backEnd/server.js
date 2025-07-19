@@ -23,6 +23,10 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
 }));
+app.use(cors({
+    origin: 'https://e-commerce-spapps.onrender.com',
+    credentials: true,
+}));
 
 // Middleware
 app.use(express.json());
